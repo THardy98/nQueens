@@ -13,4 +13,6 @@ Solving Time:
 250,000 queens = 20 - 25 seconds\
 100,000 queens = 4 - 10 seconds\
 50,000 queens = 2 - 3 seconds\
-<50,000 queens = 0 - 2 seconds
+<50,000 queens = 0 - 2 seconds\
+\
+Note: Times will vary depending on the machine you run this program on
