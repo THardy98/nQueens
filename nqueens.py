@@ -29,6 +29,7 @@ class nQueens:
     def colConflicts(self, col, n):
         oneConflict = []
         twoConflict = []
+        threeConflict = []
         for row in self.emptyRows:
             numConflicts = self.calcConflicts(row, col, n)
 
@@ -43,16 +44,24 @@ class nQueens:
             if numConflicts == 2:
                 twoConflict.append(row)
 
+            if numConflicts == 3:
+                threeConflict.append(row)
+
         if len(oneConflict) == 0:
+            if len(twoConflict) == 0:
+                rowVal = random.choice(threeConflict)
+                self.board[col] = rowVal + 1
+                self.updateConflicts(rowVal, col, n)
+                return 3
             rowVal = random.choice(twoConflict)
             self.board[col] = rowVal + 1
             self.updateConflicts(rowVal, col, n)
             return 2
-
-        rowVal = random.choice(oneConflict)
-        self.board[col] = rowVal + 1
-        self.updateConflicts(rowVal, col, n)
-        return 1
+        else:
+            rowVal = random.choice(oneConflict)
+            self.board[col] = rowVal + 1
+            self.updateConflicts(rowVal, col, n)
+            return 1
 
     def calcConflicts(self, row, col, n):
         if (row - col) >= 0:
@@ -85,6 +94,7 @@ class nQueens:
                 oldRow -= 1
                 numConflicts = self.calcConflicts(oldRow, randCol, n) - 3
                 while numConflicts < 1:
+                    #print("Generating conflict column: " + str(self.totalConflicts))
                     randCol = random.randint(0, n - 1)
                     oldRow = self.board[randCol]
                     oldRow -= 1
@@ -95,6 +105,8 @@ class nQueens:
                     numConflicts = self.calcConflicts(newRow, randCol, n)
                     if numConflicts == 0:
                         self.board[randCol] = newRow + 1
+                        #print("At zero conflict: " + str((self.calcConflicts(oldRow, randCol, n) - 3)))
+                        #print("At zero conflict, total conflicts: " + str(self.totalConflicts))
                         self.totalConflicts -= (self.calcConflicts(oldRow, randCol, n) - 3)
                         self.updateConflicts(newRow, randCol, n)
                         self.removeQueen(oldRow, randCol, n)
@@ -103,39 +115,55 @@ class nQueens:
 
                 if noConflictUpdate == False:
                     twoConflicts = []
+                    threeConflicts = []
                     randRow = random.randint(0, n - 1)
+                    while randRow == oldRow:
+                        randRow = random.randint(0, n - 1)
                     numConflicts = self.calcConflicts(randRow, randCol, n)
                     counter = 0
                     #NEW
                     while numConflicts != 1:
                         randRow = random.randint(0, n - 1)
+                        while randRow == oldRow:
+                            randRow = random.randint(0, n - 1)
                         numConflicts = self.calcConflicts(randRow, randCol, n)
                         if numConflicts == 2:
                             twoConflicts.append(randRow)
+                        if numConflicts == 3:
+                            threeConflicts.append(randRow)
                         counter += 1
                         if counter == int(n/3):
                             break
 
                     if numConflicts == 1:
                         self.board[randCol] = randRow + 1
+                        #print("At one conflict: " + str((self.calcConflicts(oldRow, randCol, n) - 3)))
+                        #print("At one conflict, total conflicts: " + str(self.totalConflicts))
                         self.totalConflicts -= ((self.calcConflicts(oldRow, randCol, n) - 3) - numConflicts)
                         self.updateSolveConflicts(randRow, randCol, n)
                         self.removeQueen(oldRow, randCol, n)
                     else:
+                        if (self.calcConflicts(oldRow, randCol, n) - 3) == 1:
+                            continue
                         if len(twoConflicts) > 0:
                             randRow = random.choice(twoConflicts)
                             self.board[randCol] = randRow + 1
+                            #print("At two conflict: " + str((self.calcConflicts(oldRow, randCol, n) - 3)))
+                            #print("At two conflict, total conflicts: " + str(self.totalConflicts))
                             self.totalConflicts -= ((self.calcConflicts(oldRow, randCol, n) - 3) - numConflicts)
                             self.updateSolveConflicts(randRow, randCol, n)
                             self.removeQueen(oldRow, randCol, n)
                         else:
-                            while numConflicts > (self.calcConflicts(oldRow, randCol, n) - 3):
-                                randRow = random.randint(0, n - 1)
-                                numConflicts = self.calcConflicts(randRow, randCol, n)
-                            self.board[randCol] = randRow + 1
-                            self.totalConflicts -= ((self.calcConflicts(oldRow, randCol, n) - 3) - numConflicts)
-                            self.updateSolveConflicts(randRow, randCol, n)
-                            self.removeQueen(oldRow, randCol, n)
+                            if (self.calcConflicts(oldRow, randCol, n) - 3) == 2:
+                                continue
+                            if len(threeConflicts) > 0:
+                                randRow = random.choice(threeConflicts)
+                                self.board[randCol] = randRow + 1
+                                #print("At three conflict: " + str((self.calcConflicts(oldRow, randCol, n) - 3)))
+                                #print("At three conflict, total conflicts: " + str(self.totalConflicts))
+                                self.totalConflicts -= ((self.calcConflicts(oldRow, randCol, n) - 3) - numConflicts)
+                                self.updateSolveConflicts(randRow, randCol, n)
+                                self.removeQueen(oldRow, randCol, n)
 
         self.num_restarts += 1
         print("restarting")
@@ -183,7 +211,7 @@ def main():
     lines = [int(i) for i in lines]
     for n in lines:
         initial_board = nQueens(n)
-        #print(initial_board.board)
+        print(initial_board.board)
         #print(initial_board.totalConflicts)
         #print(initial_board.num_restarts)
         output.write(str(initial_board.board) + "\n")
