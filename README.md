@@ -8,7 +8,7 @@ Independently developed a program that solves the nQueens problem efficiently up
 
 Solving Time:
 
-1,000,000 queens = 270 - 330 seconds
+1,000,000 queens = 180 - 240 seconds (3 - 4 mins)
 500,000 queens = 60 - 70 seconds
 250,000 queens = 20 - 25 seconds
 100,000 queens = 4 - 10 seconds
